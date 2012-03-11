@@ -1,2 +1,2 @@
-windres reduceping.rc -O coff -o reduceping.res
-gcc -Os -Wall -o ReducePing.exe reduceping.c reduceping.res -lwinmm -luser32 -lkernel32 -ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -s -Wl,--subsystem,windows
+windres src/reduceping.rc -O coff -o src/reduceping.res
+gcc -Os -Wall -o ReducePing.exe src/reduceping.c src/reduceping.res -lwinmm -luser32 -lkernel32 -ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -s -Wl,--subsystem,windows
