@@ -6,7 +6,7 @@
     name="NCLabs.ReducePing.ReducePing"
     type="win32"
 />
-<description>Your application description here.</description>
+<description>ReducePing is a small utility for improving latency in Windows.</description>
 <dependency>
     <dependentAssembly>
         <assemblyIdentity

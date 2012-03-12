@@ -1,24 +1,46 @@
+/*
+
+    Copyright 2012 Orson Peters. All rights reserved.
+
+    Redistribution of this work, with or without modification, is permitted if
+    Orson Peters is attributed as the original author or licensor of
+    this work, but not in any way that suggests that Orson Peters endorses
+    you or your use of the work.
+
+    This work is provided by Orson Peters "as is" and any express or implied
+    warranties are disclaimed. Orson Peters is not liable for any damage
+    arising in any way out of the use of this work.
+
+*/
+
 #include <windows.h>
 #include <stdlib.h>
 
 #include "resource.h"
 
+
+
 /* this is where TCPAckFrequency sub keys can be found */
 const char ROOT_KEY[] = "SYSTEM\\CurrentControlSet\\services\\Tcpip\\Parameters\\Interfaces\\";
+
+/* error handling */
+void error(char *msg) {
+    MessageBox(NULL, msg, "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+}
 
 int is_reduceping_enabled() {
     HKEY rootkey;
     
     /* open the root key */
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, ROOT_KEY, 0, KEY_READ, &rootkey) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing can't find any network interface keys in the registry and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing can't find any network interface keys in the registry and can not continue.");
         exit(1);
     }
     
     /* get number of sub keys (these are the TCP interfaces, assuming a regular windows registry) */
     DWORD numsubkeys;
     if (RegQueryInfoKey(rootkey, NULL, NULL, NULL, &numsubkeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing has encountered an error during querying the amount of sub keys and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing has encountered an error during querying the amount of sub keys and can not continue.");
         RegCloseKey(rootkey);
         exit(1);
     }
@@ -32,14 +54,14 @@ int is_reduceping_enabled() {
         strncpy(subkey, ROOT_KEY, strlen(ROOT_KEY));
         
         if (RegEnumKey(rootkey, i, subkey + strlen(ROOT_KEY), sizeof(subkey)) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing has encountered an error during enumerating registry keys, attempting to continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing has encountered an error during enumerating registry keys, attempting to continue.");
             continue;
         }
         
         /* open sub key for reading */
         HKEY tcpkey;
         if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ, &tcpkey) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing encountered an error while reading a key (this should never happen). Attempting to continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing encountered an error while reading a key (this should never happen). Attempting to continue.");
             RegCloseKey(rootkey);
             continue;
         }
@@ -76,14 +98,14 @@ void enable_reduceping() {
     
     /* open the root key */
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, ROOT_KEY, 0, KEY_READ, &rootkey) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing can't find any network interface keys in the registry and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing can't find any network interface keys in the registry and can not continue.");
         exit(1);
     }
     
     /* get number of sub keys (these are the TCP interfaces, assuming a regular windows registry) */
     DWORD numsubkeys;
     if (RegQueryInfoKey(rootkey, NULL, NULL, NULL, &numsubkeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing has encountered an error during querying the amount of sub keys and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing has encountered an error during querying the amount of sub keys and can not continue.");
         RegCloseKey(rootkey);
         exit(1);
     }
@@ -96,14 +118,14 @@ void enable_reduceping() {
         strncpy(subkey, ROOT_KEY, strlen(ROOT_KEY));
         
         if (RegEnumKey(rootkey, i, subkey + strlen(ROOT_KEY), sizeof(subkey)) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing has encountered an error during enumerating registry keys, attempting to continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing has encountered an error during enumerating registry keys, attempting to continue.");
             continue;
         }
         
         /* open sub key for writing */
         HKEY tcpkey;
         if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_WRITE, &tcpkey) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing can't write to the registry, make sure that your Windows account has Administrator rights.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing can't write to the registry, make sure that your Windows account has Administrator rights.");
             RegCloseKey(rootkey);
             return;
         }
@@ -111,7 +133,7 @@ void enable_reduceping() {
         /* set the TcpAckFrequency value to 1 */
         const DWORD value = 1;
         if (RegSetValueEx(tcpkey, "TcpAckFrequency", 0, REG_DWORD, (const BYTE *) &value, sizeof(value)) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing encountered an error while setting the TcpAckFrequency registry value, attempting to continue (this should never happen).", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing encountered an error while setting the TcpAckFrequency registry value, attempting to continue (this should never happen).");
             RegCloseKey(tcpkey);
             continue;
         }
@@ -127,14 +149,14 @@ void disable_reduceping() {
     
     /* open the root key */
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, ROOT_KEY, 0, KEY_READ, &rootkey) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing can't find any network interface keys in the registry and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing can't find any network interface keys in the registry and can not continue.");
         exit(1);
     }
     
     /* get number of sub keys (these are the TCP interfaces, assuming a regular windows registry) */
     DWORD numsubkeys;
     if (RegQueryInfoKey(rootkey, NULL, NULL, NULL, &numsubkeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
-        MessageBox(NULL, "ReducePing has encountered an error during querying the amount of sub keys and can not continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+        error("ReducePing has encountered an error during querying the amount of sub keys and can not continue.");
         RegCloseKey(rootkey);
         exit(1);
     }
@@ -147,21 +169,21 @@ void disable_reduceping() {
         strncpy(subkey, ROOT_KEY, strlen(ROOT_KEY));
         
         if (RegEnumKey(rootkey, i, subkey + strlen(ROOT_KEY), sizeof(subkey)) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing has encountered an error during enumerating registry keys, attempting to continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing has encountered an error during enumerating registry keys, attempting to continue.");
             continue;
         }
         
         /* open sub key for writing (in our case deletion) */
         HKEY tcpkey;
         if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_WRITE, &tcpkey) != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing can't write to the registry, make sure that your Windows account has Administrator rights.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing can't write to the registry, make sure that your Windows account has Administrator rights.");
             RegCloseKey(rootkey);
             return;
         }
         
         /* delete the TcpAckFrequency value */
         if (RegDeleteValue(tcpkey, "TcpAckFrequency") != ERROR_SUCCESS) {
-            MessageBox(NULL, "ReducePing encountered an error while deleting the TcpAckFrequency registry value, attempting to continue.", "ReducePing", MB_ICONEXCLAMATION | MB_OK);
+            error("ReducePing encountered an error while deleting the TcpAckFrequency registry value, attempting to continue.");
             RegCloseKey(tcpkey);
             continue;
         }
@@ -225,6 +247,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    /* did we get command line arguments? */
+    if (strcmp(lpCmdLine, "enable") == 0) {
+        enable_reduceping();
+        return 0;
+    } else if (strcmp(lpCmdLine, "disable") == 0) {
+        disable_reduceping();
+        return 0;
+    };
+    
     /* start with creating our application's default fonts */
     HFONT default_font;
     HFONT bold_font;
@@ -233,7 +264,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     nonclientmetrics.cbSize = sizeof(NONCLIENTMETRICS);
     
     if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &nonclientmetrics, 0)) {
-        MessageBox(NULL, "Error while retrieving default font", "Error!", MB_ICONEXCLAMATION | MB_OK);
+        error("Error while retrieving fonts.");
         return 1;
     }
     
@@ -245,7 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     bold_font = CreateFontIndirect(&bold_logfont);
     
     if (!default_font || !bold_font) {
-        MessageBox(NULL, "Error while retrieving default font", "Error!", MB_ICONEXCLAMATION | MB_OK);
+        error("Error while retrieving fonts.");
         return 1;
     }
 
@@ -265,7 +296,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 
     if (!RegisterClassEx(&wc)) {
-        MessageBox(NULL, "Window Registration Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
+        error("Window Registration Failed!");
         return 0;
     }
 
@@ -273,7 +304,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HWND hwnd = CreateWindowEx(0, "ReducePingClass", "ReducePing", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 398, 260, NULL, NULL, hInstance, NULL);
 
     if (!hwnd) {
-        MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
+        error("Window Creation Failed!");
         return 0;
     }
     
