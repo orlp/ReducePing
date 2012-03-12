@@ -15,16 +15,23 @@
 
 #include <windows.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "resource.h"
+
+HANDLE win_stdout, win_stderr, win_stdin;
 
 /* this is where TCPAckFrequency sub keys can be found */
 const char ROOT_KEY[] = "SYSTEM\\CurrentControlSet\\services\\Tcpip\\Parameters\\Interfaces\\";
 
 /* error handling */
-void error(char *msg) {
+void error_msgbox(char *msg) {
     MessageBox(NULL, msg, "ReducePing", MB_ICONEXCLAMATION | MB_OK);
 }
+
+void error_null(char *msg) {}
+
+void (*error)(char *msg) = error_msgbox;
 
 int is_reduceping_enabled() {
     HKEY rootkey;
@@ -247,9 +254,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     /* did we get command line arguments? */
     if (strcmp(lpCmdLine, "enable") == 0) {
+        create_stdio();
+        error = error_null;
         enable_reduceping();
         return 0;
     } else if (strcmp(lpCmdLine, "disable") == 0) {
+        create_stdio();
+        error = error_null;
         disable_reduceping();
         return 0;
     };
