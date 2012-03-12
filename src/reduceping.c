@@ -18,8 +18,6 @@
 
 #include "resource.h"
 
-
-
 /* this is where TCPAckFrequency sub keys can be found */
 const char ROOT_KEY[] = "SYSTEM\\CurrentControlSet\\services\\Tcpip\\Parameters\\Interfaces\\";
 
@@ -288,12 +286,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hInstance;
-    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2));
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(NORMAL_ICON));
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH) COLOR_WINDOW;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "ReducePingClass";
-    wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(SMALL_ICON));
 
     if (!RegisterClassEx(&wc)) {
         error("Window Registration Failed!");
