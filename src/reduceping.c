@@ -254,12 +254,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     /* did we get command line arguments? */
     if (strcmp(lpCmdLine, "enable") == 0) {
-        create_stdio();
         error = error_null;
         enable_reduceping();
         return 0;
     } else if (strcmp(lpCmdLine, "disable") == 0) {
-        create_stdio();
         error = error_null;
         disable_reduceping();
         return 0;
