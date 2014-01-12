@@ -14,6 +14,7 @@
 */
 
 #include <windows.h>
+#include <commctrl.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -252,6 +253,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    /* init common controls */
+    INITCOMMONCONTROLSEX icc;
+    icc.dwSize = sizeof(icc);
+    icc.dwICC = ICC_WIN95_CLASSES;
+    InitCommonControlsEx(&icc);
+
     /* did we get command line arguments? */
     if (strcmp(lpCmdLine, "enable") == 0) {
         error = error_null;
