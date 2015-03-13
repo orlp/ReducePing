@@ -47,19 +47,4 @@ OS would be silly.
 
 Is the source code available?
 -----------------------------
-Yes it is, it can be found on Github: http://github.com/nightcracker/ReducePing
-
-Under what license is this released?
-------------------------------------
-ReducePing is released under the NC Labs license:
-
-> Copyright 2012 Orson Peters. All rights reserved.
-
-> Redistribution of this work, with or without modification, is permitted if
-> Orson Peters is attributed as the original author or licensor of
-> this work, but not in any way that suggests that Orson Peters endorses
-> you or your use of the work.
-
-> This work is provided by Orson Peters "as is" and any express or implied
-> warranties are disclaimed. Orson Peters is not liable for any damage
-> arising in any way out of the use of this work.
+Yes it is, it can be found on Github: http://github.com/orlp/ReducePing
