@@ -68,7 +68,6 @@ int is_reduceping_enabled() {
         HKEY tcpkey;
         if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ, &tcpkey) != ERROR_SUCCESS) {
             error("ReducePing encountered an error while reading a key (this should never happen). Attempting to continue.");
-            RegCloseKey(rootkey);
             continue;
         }
         
